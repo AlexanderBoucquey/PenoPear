@@ -1,0 +1,10 @@
+function [ K ] = Kij( r,z )
+[area,~,b,c] = triangle(r,z);
+for i = 1:3
+   for j = 1:3
+       
+       K(i,j) = (r(1) + r(2) + r(3))/12/area*(b(i)*b(j) + c(i)*c(j));
+   end
+end
+end
+

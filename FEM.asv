@@ -1,0 +1,29 @@
+clear all
+close all
+Dur = 2.8E-10;
+Duz = 1.1E-9;
+Dvr = 2.32E-9;
+Dvz = 6.97E-9;
+syms V_mu(T) V_mfv(T)
+V_mu(T) = 2.39E10-4*exp(80200/8.314*(1/293.15-1/T));
+V_fv(T) = 1.61E10-4*exp(56700/8.314*(1/293.15-1/T));
+K_mu = 0.4103;
+K_mv = 27.2438;
+K_mfu = 0.1149;
+r_q = 0.97;
+hu = 7E-7;
+hv = 7.5E-7;
+
+[p,t] = pear_mesh();
+for m = 1:length(t)
+    r=p(t(m,:),1);
+    z=p(t(m,:),2);
+    K(t(m,:),t(m,:)) = Kij(r,z);
+end
+% Lineaire oplossing
+% TODO: x0 = lineaire oplossing
+x0 = 0;
+
+% Volledige oplossing
+% TODO: Zoek f en fp!
+%x = newton(x0,f,fp);

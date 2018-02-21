@@ -1,8 +1,8 @@
 function [p,t] = pear_mesh()
 y = ones(20,1);
 x = zeros(20,1);
-k=26;
-n=104;
+k=13;
+n=54;
 pv = zeros(n,2);
 for i=1:n/2
     %y(i+1) = 1-i/18;

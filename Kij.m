@@ -1,9 +1,10 @@
-function [ K ] = Kij( p,t )
+function [ K ] = Kij( r,z,Dr,Dz )
 [area,~,b,c] = triangle(r,z);
-for i = 1:length(t,1)
-   for j = 1:length(p,1)
-       kij = 0;
-       K(i,j) = 0;
+K = zeros(3,3);
+for i = 1:3
+   for j = 1:3
+       
+       K(i,j) = (r(1) + r(2) + r(3))/12/area*(Dr*b(i)*b(j) + Dz*c(i)*c(j));
    end
 end
 end

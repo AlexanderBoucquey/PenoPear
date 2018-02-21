@@ -1,5 +1,4 @@
-clear variables;
-% positieve loop
+function [p,t] = pear_mesh()
 y = ones(20,1);
 x = zeros(20,1);
 k=26;
@@ -23,3 +22,4 @@ for i=1:n/2
     pv(n+1-i,2) = y(i);
 end
 [p,t]=distmesh2d(@dpoly,@huniform,0.1,[-1,-1; 1,2],pv,pv);
+end

@@ -49,12 +49,16 @@ K_h = zeros(length(p),length(p));
 R_q = zeros(length(p),1);
 
 for o = 1:length(rn)-1
-    K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])= K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])+Kh(r(o:o+1),l(o));
-    R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
+    if((r(o)>1E-13) || (r(o+1)>1E-13)) 
+        K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])= K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])+Kh(r(o:o+1),l(o));
+       % disp(o);
+        R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
+    end
 end
+if((r(end)>1E-13) || (r(1)>1E-13)) 
   K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
   R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
-
+end
 % Lineaire oplossing
 C_u0 = (Ku + V_mu/K_mu*C + hu*K_h)\(hu*C_uamb*R_q);
 C_v0 = (Kv + hv*K_h)\(r_q*(V_mu/K_mu)*C*C_u0+hv*C_vamb*R_q);
@@ -62,16 +66,18 @@ x0 = [C_u0;C_v0];
 
 % Plot lineaire oplossing oxide
 figure
-[xi,yi] = meshgrid(-1:0.05:1, -1:0.05:2);
+[xi,yi] = meshgrid(-0.05:0.001:0.05, -0.05:0.001:0.1);
 zi = griddata(p(:,1),p(:,2),C_u0,xi,yi);
 surf(xi,yi,zi);
 
 % Plot lineaire oplossing dioxide
 figure
-[xi,yi] = meshgrid(-1:0.01:1, -1:0.01:2);
+[xi,yi] = meshgrid(-0.05:0.001:0.05, -0.05:0.001:0.1);
 zi = griddata(p(:,1),p(:,2),C_v0,xi,yi);
 surf(xi,yi,zi);
 
+figure
+scatter(rp(:,1),rp(:,2));
 % Volledige oplossing
 % TODO: Zoek f en fp!
 %x = newton(x0,f,fp);

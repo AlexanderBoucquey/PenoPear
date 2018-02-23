@@ -31,8 +31,8 @@ Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));
 
 % Randen
-randn = boundary(p);
-randp = p(randn,:);
+rn = boundary(p);
+rp = p(rn,:);
 
 % Opstellen matrices
 for m = 1:length(t)
@@ -40,20 +40,20 @@ for m = 1:length(t)
     z=p(t(m,:),2);
     Ku(t(m,:),t(m,:)) = Ku(t(m,:),t(m,:)) + Kij(r,z,Dur,Duz);
     Kv(t(m,:),t(m,:)) = Kv(t(m,:),t(m,:)) + Kij(r,z,Dvr,Dvz);
-    C(t(m,:),t(m,:)) = C(t(m,:),t(m,:))+Cij(r,z);
+    C(t(m,:),t(m,:)) = C(t(m,:),t(m,:)) + Cij(r,z);
 end
-l = sqrt((randp(1:end-1,1)-randp(2:end,1)).^2+(randp(1:end-1,2)-randp(2:end,2)).^2);
-l(length(randn)) = sqrt((randp(1,1)-randp(end,1)).^2+(randp(1,2)-randp(end,2)).^2);
-r = randp(:,1);
+l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
+l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
+r = rp(:,1);
 K_h = zeros(length(p),length(p));
 R_q = zeros(length(p),1);
 
-for o = 1:length(randn)-1
-    K_h([randn(o) randn(o+1)],[randn(o) randn(o+1)])= K_h([randn(o) randn(o+1)],[randn(o) randn(o+1)])+Kh(r(o:o+1),l(o));
-    R_q([randn(o) randn(o+1)]) = R_q([randn(o) randn(o+1)]) + Rq(r(o:o+1),l(o));
+for o = 1:length(rn)-1
+    K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])= K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])+Kh(r(o:o+1),l(o));
+    R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
 end
-  K_h([randn(length(randn)) randn(1)],[randn(length(randn)) randn(1)])= K_h([randn(length(randn)) randn(1)],[randn(length(randn)) randn(1)])+Kh(r([length(randn) 1]),l(length(randn)));
-  R_q([randn(length(randn)) randn(1)]) = R_q([randn(end) randn(1)]) + Rq(r([length(randn) 1]),l(length(randn)));
+  K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
+  R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
 
 % Lineaire oplossing
 C_u0 = (Ku + V_mu/K_mu*C + hu*K_h)\(hu*C_uamb*R_q);

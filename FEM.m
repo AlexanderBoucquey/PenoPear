@@ -47,6 +47,7 @@ l(length(randn)) = sqrt((randp(1,1)-randp(end,1)).^2+(randp(1,2)-randp(end,2)).^
 r = randp(:,1);
 K_h = zeros(length(p),length(p));
 R_q = zeros(length(p),1);
+
 for o = 1:length(randn)-1
     K_h([randn(o) randn(o+1)],[randn(o) randn(o+1)])= K_h([randn(o) randn(o+1)],[randn(o) randn(o+1)])+Kh(r(o:o+1),l(o));
     R_q([randn(o) randn(o+1)]) = R_q([randn(o) randn(o+1)]) + Rq(r(o:o+1),l(o));
@@ -70,6 +71,7 @@ figure
 [xi,yi] = meshgrid(-1:0.01:1, -1:0.01:2);
 zi = griddata(p(:,1),p(:,2),C_v0,xi,yi);
 surf(xi,yi,zi);
+
 % Volledige oplossing
 % TODO: Zoek f en fp!
 %x = newton(x0,f,fp);

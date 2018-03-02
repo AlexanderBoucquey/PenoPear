@@ -1,0 +1,31 @@
+function [Cu,Cv] = newton(C_u0,C_v0,F,J)
+% newton-raphson algorithm
+N = 100; eps = 1.e-5; % define max. no. iterations and error
+maxval = 10000.0; % define value for divergence
+u = size(C_u0);
+v = size(C_v0);
+Cux = C_u0;
+Cvx = C_v0;
+xx = [Cux;Cvx];
+while (N>0)
+ dx = J(xx)\F(xx);
+ xn = xx + dx;
+ %xn = xx-F(xx)/J(xx);
+if abs(F(xn))<eps
+ x=xn;iter=100-N;
+ Cu = x(1:u);
+ Cv = x(u+1:u+v);
+ return;
+end;
+if abs(F(xx))>maxval
+ disp(['iterations = ',num2str(iter)]);
+ error('Solution diverges');
+ break;
+end;
+ N = N - 1;
+ xx = xn;
+end;
+error('No convergence');
+end
+% end function 
+

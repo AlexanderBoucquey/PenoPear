@@ -10,8 +10,8 @@ R_g = 8.314;
 T = 272.15;
 nuu = 2/100;
 nuv =0.7/100;
-V_mu = 2.39E-4*exp(80200/R_g*(1/293.15-1/T));
-V_mfv = 1.61E-4*exp(56700/R_g*(1/293.15-1/T));
+V_mu = 2.39E10-4*exp(80200/R_g*(1/293.15-1/T));
+V_fv = 1.61E10-4*exp(56700/R_g*(1/293.15-1/T));
 K_mu = 0.4103;
 K_mv = 27.2438;
 K_mfu = 0.1149;
@@ -31,11 +31,9 @@ Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));
 
 % Randen
-%%
-rn = boundary(p,0.825);
+
+rn = boundary(p,0.75);
 rp = p(rn,:);
-scatter(rp(:,1),rp(:,2));
-%%
 
 % Opstellen matrices
 for m = 1:length(t)
@@ -86,27 +84,15 @@ surf(xi,yi,zi);
 
 figure
 scatter(rp(:,1),rp(:,2));
-%%
+
 % Volledige oplossing
 % TODO: Zoek f en fp!
-F = @(C_u,C_v) [Ku*C_u+C*R_u(C_u,C_v,V_mu,K_mu,K_mv)+hu.*(K_h*C_u-R_q*C_uamb);...
-    Kv*C_v-C*R_v(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)+hv.*(K_h*C_v-R_q*C_vamb)];
-J = @(C_u,C_v) [[Ku+C*Ru_du(C_u,C_v, V_mu,K_mu,K_mv)+hu*K_h...
-    C*Ru_dv(C_u,C_v, V_mu,K_mu,K_mv)];...
-    [-C*Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)...
-    Kv-C*Rv_dv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv*K_h]];
-
-
-[C_u,C_v,N] = newton(C_u0,C_v0,F,J);
-%%
-% Plot niet-lineaire oplossing oxide
-figure
-[xi,yi] = meshgrid(-0.05:0.001:0.05, -0.05:0.001:0.1);
-zi = griddata(p(:,1),p(:,2),C_u,xi,yi);
-surf(xi,yi,zi);
-
-% Plot niet-lineaire oplossing dioxide
-figure
-[xi,yi] = meshgrid(-0.05:0.001:0.05, -0.05:0.001:0.1);
-zi = griddata(p(:,1),p(:,2),C_v,xi,yi);
-surf(xi,yi,zi);
+% F = @(C_u,C_v) [Ku*C_u+C*Ru(C_u,C_v,V_mu,K_mu,K_mv)+hu*(K_h*C_u-R_q*C_uamb);...
+%     Kv*C_v-C*Rv(C_u,C_v,r_q,V_fv,K_mfu,V_mu,K_mu,K_mv)+hv*(K_h*C_v-R_q*C_vamb)];
+% J = @(C_u,C_v) [[Ku+C*Rudu(C_u,C_v, V_mu,K_mu,K_mv)+hu*K_h...
+%     C*Rudv(C_u,C_v, V_mu,K_mu,K_mv)];...
+%     [-C*Rvdu(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)...
+%     Kv-C*Rvdv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv*K_h]];
+% 
+% 
+% [C_u,C_v] = newton(x0,F,J);

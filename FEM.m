@@ -59,9 +59,10 @@ if((r(end)>1E-13) || (r(1)>1E-13))
   K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
   R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
 end
-% Lineaire oplossing
+Lineaire oplossing
 C_u0 = (Ku + V_mu/K_mu*C + hu*K_h)\(hu*C_uamb*R_q);
 C_v0 = (Kv + hv*K_h)\(r_q*(V_mu/K_mu)*C*C_u0+hv*C_vamb*R_q);
+
 x0 = [C_u0;C_v0];
 
 % Plot lineaire oplossing oxide
@@ -80,4 +81,8 @@ figure
 scatter(rp(:,1),rp(:,2));
 % Volledige oplossing
 % TODO: Zoek f en fp!
-%x = newton(x0,f,fp);
+f = @(u,v) [A_u*u+B*Ru(u,v,Vmu,Kmu,Kmv)+hu*(C*u-D*Cu_amb);A_v*v-B*Rv(u,v,rq,Vmfv,Kmfu,Vmu,Kmu,Kmv)+hv*(C*v-D*Cv_amb)];
+fp = @(u,v) [[A_u+B*dRudu(u,v, Vmu,Kmu,Kmv)+hu*C B*dRudv(u,v, Vmu,Kmu,Kmv)];[-B*dRvdu(u,v,rq,Vmfv,Kmfu,Vmu,Kmu,Kmv) A_v-B*dRvdv(u,v,rq,Vmu,Kmu,Kmv)+hv*C]];
+
+
+[C_u,C_v] = newton(x0,f,fp);

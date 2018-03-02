@@ -55,11 +55,15 @@ for o = 1:length(rn)-1
         R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
     end
 end
+
+
 if((r(end)>1E-13) || (r(1)>1E-13)) 
   K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
   R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
 end
-Lineaire oplossing
+
+
+%Lineaire oplossing
 C_u0 = (Ku + V_mu/K_mu*C + hu*K_h)\(hu*C_uamb*R_q);
 C_v0 = (Kv + hv*K_h)\(r_q*(V_mu/K_mu)*C*C_u0+hv*C_vamb*R_q);
 
@@ -79,10 +83,15 @@ surf(xi,yi,zi);
 
 figure
 scatter(rp(:,1),rp(:,2));
+
 % Volledige oplossing
 % TODO: Zoek f en fp!
-f = @(u,v) [A_u*u+B*Ru(u,v,Vmu,Kmu,Kmv)+hu*(C*u-D*Cu_amb);A_v*v-B*Rv(u,v,rq,Vmfv,Kmfu,Vmu,Kmu,Kmv)+hv*(C*v-D*Cv_amb)];
-fp = @(u,v) [[A_u+B*dRudu(u,v, Vmu,Kmu,Kmv)+hu*C B*dRudv(u,v, Vmu,Kmu,Kmv)];[-B*dRvdu(u,v,rq,Vmfv,Kmfu,Vmu,Kmu,Kmv) A_v-B*dRvdv(u,v,rq,Vmu,Kmu,Kmv)+hv*C]];
+f = @(C_u,C_v) [Ku*C_u+C*Ru(C_u,C_v,V_mu,K_mu,K_mv)+hu*(K_h*C_u-R_q*C_uamb);...
+    Kv*C_v-C*Rv(C_u,C_v,r_q,V_fv,K_mfu,V_mu,K_mu,K_mv)+hv*(K_h*C_v-R_q*C_vamb)];
+fp = @(C_u,C_v) [[Ku+C*Rudu(C_u,C_v, V_mu,K_mu,K_mv)+hu*K_h...
+    C*Rudv(C_u,C_v, V_mu,K_mu,K_mv)];...
+    [-C*Rvdu(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)...
+    Kv-C*Rvdv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv*K_h]];
 
 
 [C_u,C_v] = newton(x0,f,fp);

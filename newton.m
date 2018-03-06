@@ -1,6 +1,6 @@
 function [Cu,Cv,N] = newton(C_u0,C_v0,F,J)
 % newton-raphson algorithm
-N = 20; eps = 1.e-5; % define max. no. iterations and error
+N = 5; eps = 1.e-12; % define max. no. iterations and error
 maxval = 10000.0; % define value for divergence
 u = size(C_u0);
 v = size(C_v0);
@@ -29,7 +29,7 @@ end
  xx = xn;
  Cu = xx(1:u);
  Cv = xx(u+1:u+v);
-end;
+end
 error('No convergence');
 end
 % end function 

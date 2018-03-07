@@ -29,6 +29,8 @@ C_vamb = p_atm*nuv/(R_g*T);
 Ku = zeros(length(p),length(p));
 Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));
+dlmwrite('meshp.txt',p);
+dlmwrite('mesht.txt',t);
 
 % Randen
 %%

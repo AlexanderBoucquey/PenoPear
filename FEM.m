@@ -34,7 +34,6 @@ C = zeros(length(p),length(p));
 %%
 rn = boundary(p,0.825);
 rp = p(rn,:);
-scatter(rp(:,1),rp(:,2));
 %%
 
 % Opstellen matrices
@@ -108,5 +107,5 @@ surf(xi,yi,zi);
 % Plot niet-lineaire oplossing dioxide
 figure
 [xi,yi] = meshgrid(-0.05:0.001:0.05, -0.05:0.001:0.1);
-zi = griddata(p(:,1),p(:,2),C_v,xi,yi);
+zi = griddata(p(:,1),p(:,2),C_v,xi,yi);Mesh
 surf(xi,yi,zi);

@@ -33,4 +33,9 @@ ode4 = diff(w) == -r.^2.*r_q.*(V_mu.*u./((K_mu+u).*(1+v./K_mv)))-r.^2.*(V_mfv./(
 odes = [ode1; ode2; ode3; ode4];
 
 
-S = dsolve(odes)
+S = dsolve(odes);
+
+uSol(r) = S.u;
+vSol(r) = S.v;
+zSol(r) = S.z;
+wSol(r) = S.w;

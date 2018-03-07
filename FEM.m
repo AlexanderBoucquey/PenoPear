@@ -61,7 +61,7 @@ for o = 1:length(rn)-1
 end
 
 
-if((r(end)>1E-13) ||r.^2.*(V_mu.*u./((K_mu+u).*(1+v./K_mv))) (r(1)>1E-13)) 
+if((r(end)>1E-13) || (r(1)>1E-13)) 
   K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
   R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
 end

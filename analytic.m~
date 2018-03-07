@@ -31,7 +31,7 @@ C_vamb = p_atm*nuv/(R_g*T);
 % ode3 = diff(z) == r.^2.*(V_mu.*u./((K_mu+u).*(1+v./K_mv)));
 % ode4 = diff(w) == -r.^2.*r_q.*(V_mu.*u./((K_mu+u).*(1+v./K_mv)))-r.^2.*(V_mfv./(1+u./K_mfu));
 % odes = [ode1; ode2; ode3; ode4];
-[r,y] = ode45(@(r,y)[y(3)./r.^2;y(4)./r.^2;r.^2.*(V_mu.*y(1)./((K_mu+y(1)).*(1+y(2)./K_mv)));-r.^2.*r_q.*(V_mu.*y(1)./((K_mu+y(1)).*(1+y(2)./K_mv)))-r.^2.*(V_mfv./(1+y(1)./K_mfu));],[0.1 0],[0.1;0.6;0;0]);
+[r,y] = ode45(@(r,y)[y(3)./r.^2;y(4)./r.^2;r.^2.*(V_mu.*y(1)./((K_mu+y(1)).*(1+y(2)./K_mv)));-r.^2.*r_q.*(V_mu.*y(1)./((K_mu+y(1)).*(1+y(2)./K_mv)))-r.^2.*(V_mfv./(1+y(1)./K_mfu));],[0.0001 0.1],[0.1;0.6;0;0]);
 
 % S = dsolve(odes);
 % 

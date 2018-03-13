@@ -60,6 +60,7 @@ int main()
 
 	fp.close();
 	ft.close();
+
 	// Initialiseer de p en t arrays.
 	float **p = new float*[lines_p];
 	for(int i = 0; i < lines_p; ++i) {
@@ -75,28 +76,26 @@ int main()
 	ft.open("mesht.txt");
 	
 	i = 0;
-	while(i<lines_p-1){
+	while(i<lines_p){
 	   getline(fp, temp,',');		
-	   p[i][0] = stof(temp);		
+	   p[i][0] = stof(temp);	
 	   getline(fp, temp);
-	   p[i][1] = stof(temp);  
+	   p[i][1] = stof(temp); 
 	   i = i+1;
 	}
 	
 	i = 0;
-	while(i<lines_t-1){
+	while(i<lines_t){
 	  getline(ft,temp,',');
 	  t[i][0] = stoi(temp);
-	  cout <<t[i][0]<<endl;
 	  getline(ft,temp,',');
 	  t[i][1] = stoi(temp);
-	  cout <<t[i][1]<<endl;
-  	  getline(ft,temp,',');
+	  getline(ft,temp);
 	  t[i][2] = stoi(temp);
-	  cout <<t[i][2]<<endl;
 	  i = i+1;
 	}
-	cout <<lines_t<<endl;
+
+	cout << "Mesh is correct aangemaakt!" << endl;
 	//(!getline(ft,line).eof()) && 
 	// testen of mesh correct werkt
 	/*

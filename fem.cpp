@@ -93,6 +93,7 @@ int main()
 	  getline(ft,temp);
 	  t[i][2] = stoi(temp);
 	  i = i+1;
+	  
 	}
 
 	cout << "Mesh is correct aangemaakt!" << endl;
@@ -120,6 +121,34 @@ int main()
 
 	// OPSTELLEN VAN DE MATRICES
 	// TODO: matlabcode omzetten naar cpp.
+	for (int i = 0; i< lines_t; ++i){
+ 	  r=p(t(m,:),1);
+    z=p(t(m,:),2);
+    Ku(t(m,:),t(m,:)) = Ku(t(m,:),t(m,:)) + Kij(r,z,Dur,Duz);
+    Kv(t(m,:),t(m,:)) = Kv(t(m,:),t(m,:)) + Kij(r,z,Dvr,Dvz);
+    C(t(m,:),t(m,:)) = C(t(m,:),t(m,:)) + Cij(r,z);
+	}
+
+	l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
+l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
+r = rp(:,1);
+K_h = zeros(length(p),length(p));
+R_q = zeros(length(p),1);
+
+for o = 1:length(rn)-1
+    if((r(o)>1E-13) || (r(o+1)>1E-13)) 
+        K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])= K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])+Kh(r(o:o+1),l(o));
+       % disp(o);
+        R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
+    end
+end
+
+
+if((r(end)>1E-13) || (r(1)>1E-13)) 
+  K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
+  R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
+end
+
 
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.
@@ -129,5 +158,8 @@ int main()
 
 	// PLOT OPLOSSINGEN
 	// TODO: De oplossingen plotten.
+	/*Matplotlib in python heeft kei veel coole plotters en redelijk deftige documentatie
+Ik denk dat wij nu trisurf gebruiken als functie
+	*/
 	return 0;
 }

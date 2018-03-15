@@ -75,7 +75,7 @@ int main()
 	fp.open("meshp.txt");
 	ft.open("mesht.txt");
 	
-	for(int i = 0;i<lines_p; i++){
+	for(int i = 0;i<lines_p; ++i){
 	   getline(fp, temp,',');		
 	   p[i][0] = stof(temp);	
 	   getline(fp, temp);
@@ -121,16 +121,28 @@ int main()
 	float Ku[lines_p][lines_p] = {};
 	float Kv[lines_p][lines_p] = {};
 	float C[lines_p][lines_p] = {};
-
+	cout <<"Aantal lijnen p:"<< lines_p<<endl;
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
-	    r[j]= p[t[i][j]][0];
-	    z[j]= p[t[i][j]][1];
-	    
+	    r[j]= p[t[i][j]-1][0];
+	    z[j]= p[t[i][j]-1][1];
 	  }
-	  Ku = Kij(r,z,Dur,Duz);
-	  Kv = Kij(r,z,Dvr,Dvz);
-	  C = Cij(r,z);
+          float a[3] = {r[2]*z[1]-r[1]*z[2], r[0]*z[2]-r[2]*z[0], r[1]*z[0]-r[0]*z[1]}; 
+       	  float b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
+          float c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
+          float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
+          float K[3][3] = {};
+          for (int i = 0; i < 3; i++){
+            for (int j = 0; j < 3; ++j){
+              Ku[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[i]*b[j] + Duz*c[i]*c[j]);
+            }
+          }
+          for (int i = 0; i < 3; i++){
+            for (int j = 0; j < 3; ++j){
+              Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[i]*b[j] + Dvz*c[i]*c[j]);
+            }
+          }
+	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
 	      Ku[t[m][j]][t[m][j]] = Ku[t[m][j]][t[m][j]] + Ku[m][j];
@@ -139,6 +151,9 @@ int main()
 	    }
 	  }	  
 	}
+
+	// BEPALEN BOUNDARY
+	
 
 	/*l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
 l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
@@ -175,23 +190,10 @@ Ik denk dat wij nu trisurf gebruiken als functie
 	return 0;
 }
 
-float Kij(float r[3], float z[3] , float Dr, float Dz)[3][3]{
-	float a[3] = {r[2]*z[1]-r[1]*z[2], r[0]*z[2]-r[2]*z[0], r[1]*z[0]-r[0]*z[1]}; 
-	float b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
-	float c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
-	float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
-	float K[3][3] = {};
-
-	for (int i = 0; i < 3; i++){
-	  for (int j = 0; j < 3; ++j){
-	    K[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dr*b[i]*b[j] + Dz*c[i]*c[j]);
-	  }
-	}
+/*float** Kij(float r[3], float z[3] , float Dr, float Dz){
 	return K;
 }
 
 float Cij(float r[3], float z[3])[3][3]{
-	float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
-	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	return C;
-}
+}*/

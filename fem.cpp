@@ -5,6 +5,9 @@
 #include <fstream>	// Open file
 using namespace std;
 
+int mostFrequentElement(int arr[], int x);
+int numberOccurences(int arr[], int n, int x);
+
 int main()
 {	// VARIABELEN
 	// Variabelen voor mesh
@@ -153,8 +156,12 @@ int main()
 	}
 
 	// BEPALEN BOUNDARY
-	
-
+	int x = mostFrequentElement(t[0], lines_t);
+	int n =	0;
+	for (int i = 0; i < 3; ++i)
+	  n = n + numberOccurences(t[i], lines_t, x);
+	cout << "Een meest voorkomend element: " << x<<endl;
+	cout << "Aantal voorkomens: "<< n << endl;
 	/*l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
 l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
 r = rp(:,1);
@@ -190,10 +197,27 @@ Ik denk dat wij nu trisurf gebruiken als functie
 	return 0;
 }
 
-/*float** Kij(float r[3], float z[3] , float Dr, float Dz){
-	return K;
+int mostFrequentElement(int arr[], int x){
+	int current_candidate = arr[0];
+	int counter = 0;
+	int i = 0;
+	for (i = 0; i < x; ++i){
+	  if(current_candidate == arr[i]){
+	    ++counter;
+	} else if (counter ==0){
+	    current_candidate = arr[i];
+	    ++counter;
+	} else {
+	    --counter;
+	} cout << current_candidate << endl;
+	}
+	return current_candidate;
 }
 
-float Cij(float r[3], float z[3])[3][3]{
-	return C;
-}*/
+int numberOccurences(int arr[], int n, int x){
+	int res = 0;
+	for (int i=0; i<n; i++)
+	  if (x == arr[i])
+	    res++;
+	return res;
+}

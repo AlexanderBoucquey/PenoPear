@@ -34,7 +34,7 @@ dlmwrite('mesht.txt',t);
 
 % Randen
 %%
-rn = boundary(p,0.305);
+rn = boundary(p,0.7);
 rp = p(rn,:);
 %%
 
@@ -47,7 +47,7 @@ for m = 1:length(t)
     C(t(m,:),t(m,:)) = C(t(m,:),t(m,:)) + Cij(r,z);
 end
 l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
-l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
+%l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
 r = rp(:,1);
 K_h = zeros(length(p),length(p));
 R_q = zeros(length(p),1);
@@ -61,15 +61,15 @@ for o = 1:length(rn)-1
 end
 
 
-if((r(end)>1E-13) || (r(1)>1E-13)) 
-  K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
-  R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
-end
+% if((r(end)>1E-13) || (r(1)>1E-13)) 
+%   K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
+%   R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
+% end
 
 
 %Lineaire oplossing
-C_u0 = (Ku + V_mu/K_mu*C + hu*K_h)\(hu*C_uamb*R_q);
-C_v0 = (Kv + hv*K_h)\(r_q*(V_mu/K_mu)*C*C_u0+hv*C_vamb*R_q);
+C_u0 = (Ku + (V_mu/K_mu).*C + hu.*K_h)\(hu.*C_uamb.*R_q);
+C_v0 = (Kv + hv.*K_h)\(r_q.*(V_mu/K_mu).*C*C_u0+hv.*C_vamb.*R_q);
 
 x0 = [C_u0;C_v0];
 
@@ -90,12 +90,12 @@ scatter(rp(:,1),rp(:,2));
 %%
 % Volledige oplossing
 % TODO: Zoek f en fp!
-F = @(C_u,C_v) [Ku*C_u+C*R_u(C_u,C_v,V_mu,K_mu,K_mv)+hu.*(K_h*C_u-R_q*C_uamb);...
-    Kv*C_v-C*R_v(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)+hv.*(K_h*C_v-R_q*C_vamb)];
-J = @(C_u,C_v) [[Ku+C*Ru_du(C_u,C_v, V_mu,K_mu,K_mv)+hu*K_h...
+F = @(C_u,C_v) [Ku*C_u+C*R_u(C_u,C_v,V_mu,K_mu,K_mv)+hu.*(K_h*C_u-R_q.*C_uamb);...
+    Kv*C_v-C*R_v(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)+hv.*(K_h*C_v-R_q.*C_vamb)];
+J = @(C_u,C_v) [[Ku+C*Ru_du(C_u,C_v, V_mu,K_mu,K_mv)+hu.*K_h ...
     C*Ru_dv(C_u,C_v, V_mu,K_mu,K_mv)];...
-    [-C*Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)...
-    Kv-C*Rv_dv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv*K_h]];
+    [-C*Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv) ...
+    Kv-C*Rv_dv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv.*K_h]];
 
 
 [C_u,C_v,N] = newton(C_u0,C_v0,F,J);

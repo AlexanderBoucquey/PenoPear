@@ -24,5 +24,5 @@ for i=1:n
 end
 pv(n+1,:) = [0 2];
 pv = 0.05.*pv;
-[p,t]=distmesh2d(@dpoly,@huniform,0.004,[-1,-1; 1,2],pv,pv);
+[p,t]=distmesh2d(@dpoly,@huniform,0.0015,[-1,-1; 1,2],pv,pv);
 end

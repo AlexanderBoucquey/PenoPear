@@ -95,6 +95,13 @@ int main()
 	}
 
 	cout << "Mesh is correct aangemaakt!" << endl;
+
+	// Laad de boundary in
+	
+	for(int i = 0; i<lines_boundary; i++){
+	 getline(fb, temp, ','); 
+
+	}
 	//(!getline(ft,line).eof()) && 
 	// testen of mesh correct werkt
 	/*

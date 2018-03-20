@@ -129,64 +129,47 @@ int main()
 	   rp[i][1] = stof(temp); 
 	}
 
-	cout << "Mesh is correct aangemaakt!" << endl;
+	cout << "Mesh is aangemaakt!" << endl;
 
-	// Laad de boundary in
-	
-	for(int i = 0; i<lines_boundary; i++){
-	 getline(fb, temp, ','); 
-
-	}
-	//(!getline(ft,line).eof()) && 
-	// testen of mesh correct werkt
-	/*
-	ofstream out("test_mesh_p.txt");
-	for(int i=0;i<100;i++){
-		for (int j=0;j<2;j++){
-			out<<p[i][j];
-		}
-		out<< "\n";	
-	}
-	out.close();
-
-	ofstream out2("test_mesh_t.txt");
-	for(int i=0;i<100;i++){
-		for (int j=0;j<3;j++){
-			out2<<t[i][j];
-		}
-		out2<< "\n";	
-	}
-	out2.close();*/
-
+	cout <<"Aantal lijnen p:"<< lines_p<<endl;
 
 	// OPSTELLEN VAN DE MATRICES
-	// TODO: matlabcode omzetten naar cpp.
+	// Initialiseren
 	float r[3] = {};
 	float z[3] = {};
 	float Ku[lines_p][lines_p] = {};
 	float Kv[lines_p][lines_p] = {};
 	float C[lines_p][lines_p] = {};
-	cout <<"Aantal lijnen p:"<< lines_p<<endl;
+	float l[lines_rn] = {};
+	float r[lines_rp] = {};
+	float K_h[lines_p][lines_p] = {};
+	float R_q[lines_p] = {};
+
+	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
 	    r[j]= p[t[i][j]-1][0];
 	    z[j]= p[t[i][j]-1][1];
 	  }
+
           float a[3] = {r[2]*z[1]-r[1]*z[2], r[0]*z[2]-r[2]*z[0], r[1]*z[0]-r[0]*z[1]}; 
        	  float b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
           float c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
           float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
           float K[3][3] = {};
+
           for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; ++j){
               Ku[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[i]*b[j] + Duz*c[i]*c[j]);
             }
           }
+
           for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; ++j){
               Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[i]*b[j] + Dvz*c[i]*c[j]);
             }
           }
+
 	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
@@ -197,33 +180,35 @@ int main()
 	  }	  
 	}
 
-	// BEPALEN BOUNDARY
-	int x = mostFrequentElement(t[0], lines_t);
-	int n =	0;
-	for (int i = 0; i < 3; ++i)
-	  n = n + numberOccurences(t[i], lines_t, x);
-	cout << "Een meest voorkomend element: " << x<<endl;
-	cout << "Aantal voorkomens: "<< n << endl;
-	/*l = sqrt((rp(1:end-1,1)-rp(2:end,1)).^2+(rp(1:end-1,2)-rp(2:end,2)).^2);
-l(length(rn)) = sqrt((rp(1,1)-rp(end,1)).^2+(rp(1,2)-rp(end,2)).^2);
-r = rp(:,1);
-K_h = zeros(length(p),length(p));
-R_q = zeros(length(p),1);
+	// Invullen l en r.	
+	for (int i = 0; i<lines_rp-1; i++){
+	  l[i] = sqrt(pow(rp[i][0]-rp[i+1][0],2)+pow(rp[i][1]-rp[i+1][1],2));
+	  r[i] = rp[i][0];
+	}
+	r[lines_rp] = rp[lines_rp][0];
+	
+	// Invullen K_h en R_q.
+	// TODO: Klopt het wel dat de som van K_h met Kh is en R_q met Rq ??
+	for (int i = 0; i < lines_rn-1; i++){
+	  if ((r[i] >1e-13) || (r[i+1]>1e-13)){
+	    K_h[rn[i]][rn[i]] = K_h[rn[i]][rn[i]] + Kh[r[i]][l[i]];
+	    K_h[rn[i]][rn[i+1]] = K_h[rn[i]][rn[i+1]] + Kh[r[i]][l[i]];
+	    K_h[rn[i+1]][rn[i]] = K_h[rn[i+1]][rn[i]] + Kh[r[i+1]][l[i]];
+	    K_h[rn[i+1]][rn[i+1]] = K_h[rn[i+1]][rn[i+1]] + Kh[r[i+1]][l[i]];
+	    R_q[rn[i]] = R_q[rn[i]] + Rq[r[i]][l[i]];
+	    R_q[rn[i+1]] = R_q[rn[i+1]] + Rq[r[i+1]][l[i]];
+	  }
+	}
 
-for o = 1:length(rn)-1
-    if((r(o)>1E-13) || (r(o+1)>1E-13)) 
-        K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])= K_h([rn(o) rn(o+1)],[rn(o) rn(o+1)])+Kh(r(o:o+1),l(o));
-       % disp(o);
-        R_q([rn(o) rn(o+1)]) = R_q([rn(o) rn(o+1)]) + Rq(r(o:o+1),l(o));
-    end
-end
-
-
-if((r(end)>1E-13) || (r(1)>1E-13)) 
-  K_h([rn(end) rn(1)],[rn(length(rn)) rn(1)])= K_h([rn(end) rn(1)],[rn(end) rn(1)])+Kh(r([length(rn) 1]),l(length(rn)));
-  R_q([rn(end) rn(1)]) = R_q([rn(end) rn(1)]) + Rq(r([length(rn) 1]),l(length(rn)));
-end */
-
+	// TODO: klopt het hier dat het telkens eerst het einde is en dan het begin?
+	if ((r[lines_rp] >1e-13) || (r[0]>1e-13)){
+	  K_h[rn[lines_rn]][rn[lines_rn]] = K_h[rn[lines_rn]][rn[lines_rn]] + Kh[rn[lines_rn]][l[lines_rn]];
+	  K_h[rn[lines_rn]][rn[0]] = K_h[rn[lines_rn]][rn[0]] + Kh[rn[lines_rn]][l[lines_rn]];
+	  K_h[rn[0]][rn[lines_rn]] = K_h[rn[0]][rn[lines_rn]] + Kh[r[0]][l[lines_rn]];
+	  K_h[rn[0]][rn[0]] = K_h[rn[0]][rn[0]]] + Kh[r[0]][l[lines_rn]];
+	  R_q[rn[lines_rn]] = R_q[rn[lines_rn]] + Rq[r[lines_rn]][l[lines_rn]];
+	  R_q[rn[0]] = R_q[rn[0]] + Rq[r[0]][l[lines_rn]];
+	}
 
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.
@@ -233,9 +218,6 @@ end */
 
 	// PLOT OPLOSSINGEN
 	// TODO: De oplossingen plotten.
-	/*Matplotlib in python heeft kei veel coole plotters en redelijk deftige documentatie
-Ik denk dat wij nu trisurf gebruiken als functie
-	*/
 	return 0;
 }
 

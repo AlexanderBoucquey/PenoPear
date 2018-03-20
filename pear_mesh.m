@@ -1,4 +1,4 @@
-function [p,t] = pear_mesh()
+function [p,t] = pear_mesh(mesh_size)
 y = ones(20,1);
 x = zeros(20,1);
 k=15;
@@ -24,5 +24,5 @@ for i=1:n
 end
 pv(n+1,:) = [0 2];
 pv = 0.05.*pv;
-[p,t]=distmesh2d(@dpoly,@huniform,0.0015,[-1,-1; 1,2],pv,pv);
+[p,t]=distmesh2d(@dpoly,@huniform,mesh_size,[-1,-1; 1,2],pv,pv);
 end

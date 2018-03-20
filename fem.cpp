@@ -16,7 +16,7 @@ int main()
 	int nump{0};
 	int numt{0};
 	string line,temp;
-	ifstream fp,ft;
+	ifstream fp,ft, frn, frp;
 	int i;
 
 	// TEST CONSTANTEN
@@ -47,36 +47,59 @@ int main()
 	// MESH
 	// p zijn de x en y waarden van alle mogelijke hoeken van de triangels.
 	// t zijn alle geconnecteerde triangles.	
+	// rn zijn randwaarden.
+	// rp zijn de randpunten.
 	fp.open("meshp.txt");
 	ft.open("mesht.txt");
-	
+	frn.open("rn.txt");
+	frp.open("rp.txt");
 
 	// Tel aantal lijnen code.
 	int lines_p = 0;
 	int lines_t = 0;
+	int lines_rn = 0;
+	int lines_rp = 0;
 
 	while(!getline(fp, line).eof())
 		lines_p++;
 	
 	while(!getline(ft, line).eof())
 		lines_t++;
+	
+	while(!getline(frn, line).eof())
+		lines_rn++;
+	
+	while(!getline(frp, line).eof())
+		lines_rp++;
 
 	fp.close();
 	ft.close();
+	frn.close();
+	frp.close();
 
-	// Initialiseer de p en t arrays.
+	// Initialiseer de p,t, rn en rp arrays.
 	float **p = new float*[lines_p];
 	for(int i = 0; i < lines_p; ++i) {
 	    p[i] = new float[2];
 	}
+
 	int **t = new int*[lines_t];
 	for(int i = 0; i < lines_t; ++i) {
 	    t[i] = new int[3];
 	}
 	
-	// Vul de p en de t arrays in.
+	int *rn = new int[lines_rn];
+
+	float **rp = new float*[lines_rp];
+	for(int i = 0; i < lines_rp; ++i) {
+	    rp[i] = new float[2];
+	}
+
+	// Vul de p,t, rn en rp arrays in.
 	fp.open("meshp.txt");
 	ft.open("mesht.txt");
+	frn.open("rn.txt");
+	frp.open("rp.txt");
 	
 	for(int i = 0;i<lines_p; ++i){
 	   getline(fp, temp,',');		
@@ -92,6 +115,18 @@ int main()
 	  t[i][1] = stoi(temp);
 	  getline(ft,temp);
 	  t[i][2] = stoi(temp);	  
+	}
+
+	for(int i = 0;i<lines_rn; ++i){
+	   getline(frn, temp);
+	   rn[i] = stof(temp); 
+	}
+
+	for(int i = 0;i<lines_rp; ++i){
+	   getline(frp, temp,',');		
+	   rp[i][0] = stof(temp);	
+	   getline(frp, temp);
+	   rp[i][1] = stof(temp); 
 	}
 
 	cout << "Mesh is correct aangemaakt!" << endl;

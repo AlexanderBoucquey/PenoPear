@@ -141,7 +141,7 @@ int main()
 	float Kv[lines_p][lines_p] = {};
 	float C[lines_p][lines_p] = {};
 	float l[lines_rn] = {};
-	float r[lines_rp] = {};
+	float r2[lines_rp] = {};
 	float K_h[lines_p][lines_p] = {};
 	float R_q[lines_p] = {};
 
@@ -183,14 +183,14 @@ int main()
 	// Invullen l en r.	
 	for (int i = 0; i<lines_rp-1; i++){
 	  l[i] = sqrt(pow(rp[i][0]-rp[i+1][0],2)+pow(rp[i][1]-rp[i+1][1],2));
-	  r[i] = rp[i][0];
+	  r2[i] = rp[i][0];
 	}
-	r[lines_rp] = rp[lines_rp][0];
+	r2[lines_rp] = rp[lines_rp][0];
 	
 	// Invullen K_h en R_q.
 	// TODO: Klopt het wel dat de som van K_h met Kh is en R_q met Rq ??
 	for (int i = 0; i < lines_rn-1; i++){
-	  if ((r[i] >1e-13) || (r[i+1]>1e-13)){
+	  if ((r2[i] >1e-13) || (r2[i+1]>1e-13)){
 	    K_h[rn[i]][rn[i]] = K_h[rn[i]][rn[i]] + Kh[r[i]][l[i]];
 	    K_h[rn[i]][rn[i+1]] = K_h[rn[i]][rn[i+1]] + Kh[r[i]][l[i]];
 	    K_h[rn[i+1]][rn[i]] = K_h[rn[i+1]][rn[i]] + Kh[r[i+1]][l[i]];
@@ -201,11 +201,11 @@ int main()
 	}
 
 	// TODO: klopt het hier dat het telkens eerst het einde is en dan het begin?
-	if ((r[lines_rp] >1e-13) || (r[0]>1e-13)){
+	if ((r2[lines_rp] >1e-13) || (r2[0]>1e-13)){
 	  K_h[rn[lines_rn]][rn[lines_rn]] = K_h[rn[lines_rn]][rn[lines_rn]] + Kh[rn[lines_rn]][l[lines_rn]];
 	  K_h[rn[lines_rn]][rn[0]] = K_h[rn[lines_rn]][rn[0]] + Kh[rn[lines_rn]][l[lines_rn]];
 	  K_h[rn[0]][rn[lines_rn]] = K_h[rn[0]][rn[lines_rn]] + Kh[r[0]][l[lines_rn]];
-	  K_h[rn[0]][rn[0]] = K_h[rn[0]][rn[0]]] + Kh[r[0]][l[lines_rn]];
+	  K_h[rn[0]][rn[0]] = K_h[rn[0]][rn[0]] + Kh[r[0]][l[lines_rn]];
 	  R_q[rn[lines_rn]] = R_q[rn[lines_rn]] + Rq[r[lines_rn]][l[lines_rn]];
 	  R_q[rn[0]] = R_q[rn[0]] + Rq[r[0]][l[lines_rn]];
 	}

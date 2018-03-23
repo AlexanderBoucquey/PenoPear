@@ -3,7 +3,10 @@
 #include <iomanip>
 #include <math.h>       /* pow */
 #include <fstream>	// Open file
+#include <Eigen/Dense>  // Eigen Library
+
 using namespace std;
+using Eigen::MatrixXd; // Eigen library
 
 int mostFrequentElement(int arr[], int x);
 int numberOccurences(int arr[], int n, int x);
@@ -17,7 +20,7 @@ int main()
 	int numt{0};
 	string line,temp;
 	ifstream fp,ft, frn, frp;
-	int i;
+	float Kh, Rq;	
 
 	// TEST CONSTANTEN
 	float T = 272.15;
@@ -158,26 +161,26 @@ int main()
           float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
           float K[3][3] = {};
 
-          for (int i = 0; i < 3; i++){
+          //for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; ++j){
               Ku[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[i]*b[j] + Duz*c[i]*c[j]);
             }
-          }
+          //}
 
-          for (int i = 0; i < 3; i++){
+          //for (int i = 0; i < 3; i++){
             for (int j = 0; j < 3; ++j){
               Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[i]*b[j] + Dvz*c[i]*c[j]);
             }
-          }
+          //}
 
 	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
-	  for (int m = 0; m <3; ++m){
+	  //for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
-	      Ku[t[m][j]][t[m][j]] = Ku[t[m][j]][t[m][j]] + Ku[m][j];
-    	      Kv[t[m][j]][t[m][j]] = Kv[t[m][j]][t[m][j]] + Kv[m][j];
-    	      C[t[m][j]][t[m][j]] = C[t[m][j]][t[m][j]] + C[m][j];
+	      Ku[t[i][j]][t[i][j]] = Ku[t[i][j]][t[i][j]] + Ku[i][j];
+    	      Kv[t[i][j]][t[i][j]] = Kv[t[i][j]][t[i][j]] + Kv[i][j];
+    	      C[t[i][j]][t[i][j]] = C[t[i][j]][t[i][j]] + C[i][j];
 	    }
-	  }	  
+	  //}	  
 	}
 
 	// Invullen l en r.	
@@ -191,24 +194,21 @@ int main()
 	// TODO: Klopt het wel dat de som van K_h met Kh is en R_q met Rq ??
 	for (int i = 0; i < lines_rn-1; i++){
 	  if ((r2[i] >1e-13) || (r2[i+1]>1e-13)){
-	    K_h[rn[i]][rn[i]] = K_h[rn[i]][rn[i]] + Kh[r[i]][l[i]];
-	    K_h[rn[i]][rn[i+1]] = K_h[rn[i]][rn[i+1]] + Kh[r[i]][l[i]];
-	    K_h[rn[i+1]][rn[i]] = K_h[rn[i+1]][rn[i]] + Kh[r[i+1]][l[i]];
-	    K_h[rn[i+1]][rn[i+1]] = K_h[rn[i+1]][rn[i+1]] + Kh[r[i+1]][l[i]];
-	    R_q[rn[i]] = R_q[rn[i]] + Rq[r[i]][l[i]];
-	    R_q[rn[i+1]] = R_q[rn[i+1]] + Rq[r[i+1]][l[i]];
+	    Kh = l[i]/12*(3*r2[i]+r2[i+1]);
+	    K_h[rn[i]][rn[i]] = K_h[rn[i]][rn[i]] + Kh;
+	    Kh = l[i]/12*(r2[i]+r2[i+1]);
+	    K_h[rn[i]][rn[i+1]] = K_h[rn[i]][rn[i+1]] + Kh;
+	    Kh = l[i]/12*(r2[i]+r2[i+1]);
+	    K_h[rn[i+1]][rn[i]] = K_h[rn[i+1]][rn[i]] + Kh;
+	    Kh = l[i]/12*(r2[i]+3*r2[i+1]);
+	    K_h[rn[i+1]][rn[i+1]] = K_h[rn[i+1]][rn[i+1]] + Kh;
+	    Rq = l[i]/6*(2*r2[i]+r[i+1]);
+	    R_q[rn[i]] = R_q[rn[i]] + Rq;
+	    Rq = l[i]/6*(r2[i]+2*r2[i+1]);
+	    R_q[rn[i+1]] = R_q[rn[i+1]] + Rq;
 	  }
 	}
 
-	// TODO: klopt het hier dat het telkens eerst het einde is en dan het begin?
-	if ((r2[lines_rp] >1e-13) || (r2[0]>1e-13)){
-	  K_h[rn[lines_rn]][rn[lines_rn]] = K_h[rn[lines_rn]][rn[lines_rn]] + Kh[rn[lines_rn]][l[lines_rn]];
-	  K_h[rn[lines_rn]][rn[0]] = K_h[rn[lines_rn]][rn[0]] + Kh[rn[lines_rn]][l[lines_rn]];
-	  K_h[rn[0]][rn[lines_rn]] = K_h[rn[0]][rn[lines_rn]] + Kh[r[0]][l[lines_rn]];
-	  K_h[rn[0]][rn[0]] = K_h[rn[0]][rn[0]] + Kh[r[0]][l[lines_rn]];
-	  R_q[rn[lines_rn]] = R_q[rn[lines_rn]] + Rq[r[lines_rn]][l[lines_rn]];
-	  R_q[rn[0]] = R_q[rn[0]] + Rq[r[0]][l[lines_rn]];
-	}
 
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.

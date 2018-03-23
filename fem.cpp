@@ -140,27 +140,25 @@ int main()
 	// OPSTELLEN VAN DE MATRICES
 	// Initialiseren
 	float r[3] = {};
-
 	float z[3] = {};
-	cout<<"test"<<endl;
-	float Ku[lines_p][lines_p] = {};
-
-	float Kv[lines_p][lines_p] = {};
-	float C[lines_p][lines_p] = {};
-	float l[lines_rn] = {};
-	float r2[lines_rp] = {};
-	float K_h[lines_p][lines_p] = {};
-	float R_q[lines_p] = {};
-	float Ku_temp[3][3] = {};
-	float Kv_temp[3][3] = {};
-
+	Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> Ku, Kv, C,K_h, Ku_temp, Kv_temp, l, r2, R_q;
+	Ku.resize(lines_p,lines_p);
+	Kv.resize(lines_p,lines_p);
+	C.resize(lines_p,lines_p);
+	K_h.resize(lines_p,lines_p);
+	Ku_temp.resize(3,3);
+	Kv_temp.resize(3,3);
+	l.resize(lines_rn,1);
+	r2.resize(lines_rp,1);
+	R_q.resize(lines_p,1);
+	
 	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
-	    r[j]= p[t[i][j]-1][0];
-	    z[j]= p[t[i][j]-1][1];
-	  }
-
+	    r(j,1)= p[t[i][j]-1][0];
+	    z(j,1)= p[t[i][j]-1][1];
+	  }}
+/*
           float a[3] = {r[2]*z[1]-r[1]*z[2], r[0]*z[2]-r[2]*z[0], r[1]*z[0]-r[0]*z[1]}; 
        	  float b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
           float c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
@@ -188,7 +186,7 @@ int main()
 	    }
 	  }	  
 	}
-
+	
 	// Invullen l en r.	
 	for (int i = 0; i<lines_rp-1; i++){
 	  l[i] = sqrt(pow(rp[i][0]-rp[i+1][0],2)+pow(rp[i][1]-rp[i+1][1],2));
@@ -214,7 +212,7 @@ int main()
 	  }
 	}
 
-
+	*/
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.
 //
@@ -227,7 +225,7 @@ int main()
 	// TODO: Juiste functies ingeven en Newton implementeren.
 
 	// PLOT OPLOSSINGEN
-	// TODO: De oplossingen plotten.
+	// TODO: De oplossingen plotten. */
 	return 0;
 }
 

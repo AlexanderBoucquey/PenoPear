@@ -150,6 +150,7 @@ int main()
 	float R_q[lines_p] = {};
 	float Ku_temp[3][3] = {};
 	float Kv_temp[3][3] = {};
+	cout<<"test"<<endl;
 	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
@@ -213,9 +214,10 @@ int main()
 
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.
-	VectorXd u(lines_p);
-	SparseMatrix<float> A(lines_p,lines_p);
-	u = Map<VectorXf>(R_q);
+//
+//	VectorXd u(lines_p);
+//	SparseMatrix<float> A(lines_p,lines_p);
+//	u = Map<VectorXf>(R_q);//*
 //	u = hu*C_uamb*R_q;	
 
 	// NIET LINEAIRE OPLOSSING

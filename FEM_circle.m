@@ -25,7 +25,7 @@ C_uamb = p_atm*nuu/(R_g*T);
 C_vamb = p_atm*nuv/(R_g*T);
 
 % Mesh
-[p,t] = pear_mesh_circle(0.0008);
+[p,t] = pear_mesh_circle(0.001);
 Ku = zeros(length(p),length(p));
 Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));

@@ -25,7 +25,7 @@ C_uamb = p_atm*nuu/(R_g*T);
 C_vamb = p_atm*nuv/(R_g*T);
 
 % Mesh
-[p,t] = pear_mesh_circle(0.001);
+[p,t] = pear_mesh_circle(0.0008);
 Ku = zeros(length(p),length(p));
 Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));
@@ -118,4 +118,4 @@ R = 0.05;
 r = linspace(0,0.05,200);
 Cu_analytic = (C_uamb.*R.^2.*hu.*sinh(r.*sqrt(V_mu./(Dur.*K_mu))))./(R.*hu.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) - Dur.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) + Dur.*R.*cosh(R.*sqrt(V_mu./(Dur.*K_mu))).*sqrt(V_mu./(Dur.*K_mu)))./r;
 figure
-plot(r,Cu_analytic,xinumeriek(1,:),zinumeriek(76,:)),legend('analytisch','numeriek');
+plot(r,Cu_analytic,xinumeriek(1,:),zinumeriek(51,:)),legend('analytisch','numeriek');

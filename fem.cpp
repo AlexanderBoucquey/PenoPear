@@ -140,8 +140,11 @@ int main()
 	// OPSTELLEN VAN DE MATRICES
 	// Initialiseren
 	float r[3] = {};
+
 	float z[3] = {};
+	cout<<"test"<<endl;
 	float Ku[lines_p][lines_p] = {};
+
 	float Kv[lines_p][lines_p] = {};
 	float C[lines_p][lines_p] = {};
 	float l[lines_rn] = {};
@@ -150,7 +153,7 @@ int main()
 	float R_q[lines_p] = {};
 	float Ku_temp[3][3] = {};
 	float Kv_temp[3][3] = {};
-	cout<<"test"<<endl;
+
 	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
@@ -171,7 +174,7 @@ int main()
 
           for (int l = 0; l < 3; l++){
             for (int j = 0; j < 3; ++j){
-              Kv_temp[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[l]*b[j] + Dvz*c[l]*c[j]);
+              Kv_temp[l][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[l]*b[j] + Dvz*c[l]*c[j]);
             }
           }
 

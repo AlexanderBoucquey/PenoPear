@@ -4,9 +4,10 @@
 #include <math.h>       /* pow */
 #include <fstream>	// Open file
 #include <Eigen/Dense>  // Eigen Library
+#include <Eigen/IterativeLinearSolvers> // Conjugate gradient
 
 using namespace std;
-using Eigen::MatrixXd; // Eigen library
+using namespace Eigen; // Eigen library
 
 int mostFrequentElement(int arr[], int x);
 int numberOccurences(int arr[], int n, int x);
@@ -58,10 +59,10 @@ int main()
 	frp.open("rp.txt");
 
 	// Tel aantal lijnen code.
-	int lines_p = 0;
-	int lines_t = 0;
-	int lines_rn = 0;
-	int lines_rp = 0;
+	int lines_p= 0;
+	int lines_t= 0;
+	int lines_rn= 0;
+	int lines_rp= 0;
 
 	while(!getline(fp, line).eof())
 		lines_p++;
@@ -176,9 +177,9 @@ int main()
 	float C_temp[3][3] = {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
-	      Ku[t[i][j]][t[i][j]] = Ku[t[i][j]][t[i][j]] + Ku_temp[m][j];
-    	      Kv[t[i][j]][t[i][j]] = Kv[t[i][j]][t[i][j]] + Kv_temp[m][j];
-    	      C[t[i][j]][t[i][j]] = C[t[i][j]][t[i][j]] + C_temp[m][j];
+	      Ku[t[i][j]-1][t[i][j]-1] = Ku[t[i][j]-1][t[i][j]-1] + Ku_temp[m][j];
+    	      Kv[t[i][j]-1][t[i][j]-1] = Kv[t[i][j]-1][t[i][j]-1] + Kv_temp[m][j];
+    	      C[t[i][j]-1][t[i][j]-1] = C[t[i][j]-1][t[i][j]-1] + C_temp[m][j];
 
 	    }
 	  }	  
@@ -192,27 +193,30 @@ int main()
 	r2[lines_rp] = rp[lines_rp][0];
 	
 	// Invullen K_h en R_q.
-	// TODO: Klopt het wel dat de som van K_h met Kh is en R_q met Rq ??
 	for (int i = 0; i < lines_rn-1; i++){
 	  if ((r2[i] >1e-13) || (r2[i+1]>1e-13)){
 	    Kh = l[i]/12*(3*r2[i]+r2[i+1]);
-	    K_h[rn[i]][rn[i]] = K_h[rn[i]][rn[i]] + Kh;
+	    K_h[rn[i]-1][rn[i]-1] = K_h[rn[i]-1][rn[i]-1] + Kh;
 	    Kh = l[i]/12*(r2[i]+r2[i+1]);
-	    K_h[rn[i]][rn[i+1]] = K_h[rn[i]][rn[i+1]] + Kh;
+	    K_h[rn[i]-1][rn[i+1]-1] = K_h[rn[i]-1][rn[i+1]-1] + Kh;
 	    Kh = l[i]/12*(r2[i]+r2[i+1]);
-	    K_h[rn[i+1]][rn[i]] = K_h[rn[i+1]][rn[i]] + Kh;
+	    K_h[rn[i+1]-1][rn[i]-1] = K_h[rn[i+1]-1][rn[i]-1] + Kh;
 	    Kh = l[i]/12*(r2[i]+3*r2[i+1]);
-	    K_h[rn[i+1]][rn[i+1]] = K_h[rn[i+1]][rn[i+1]] + Kh;
+	    K_h[rn[i+1]-1][rn[i+1]-1] = K_h[rn[i+1]-1][rn[i+1]-1] + Kh;
 	    Rq = l[i]/6*(2*r2[i]+r[i+1]);
-	    R_q[rn[i]] = R_q[rn[i]] + Rq;
+	    R_q[rn[i]-1] = R_q[rn[i]-1] + Rq;
 	    Rq = l[i]/6*(r2[i]+2*r2[i+1]);
-	    R_q[rn[i+1]] = R_q[rn[i+1]] + Rq;
+	    R_q[rn[i+1]-1] = R_q[rn[i+1]-1] + Rq;
 	  }
 	}
 
 
 	// LINEAIRE OPLOSSING
 	// TODO: lineaire oplossing berekenen.
+	VectorXd u(lines_p);
+	SparseMatrix<float> A(lines_p,lines_p);
+	u = Map<VectorXf>(R_q);
+//	u = hu*C_uamb*R_q;	
 
 	// NIET LINEAIRE OPLOSSING
 	// TODO: Juiste functies ingeven en Newton implementeren.

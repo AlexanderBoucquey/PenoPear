@@ -147,7 +147,8 @@ int main()
 	float r2[lines_rp] = {};
 	float K_h[lines_p][lines_p] = {};
 	float R_q[lines_p] = {};
-
+	float Ku_temp[3][3] = {};
+	float Kv_temp[3][3] = {};
 	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
@@ -159,28 +160,28 @@ int main()
        	  float b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
           float c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
           float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
-          float K[3][3] = {};
 
           for (int l = 0; l < 3; l++){
             for (int j = 0; j < 3; ++j){
-              Ku[l][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[l]*b[j] + Duz*c[l]*c[j]);
+              Ku_temp[l][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[l]*b[j] + Duz*c[l]*c[j]);
             }
           }
 
           for (int l = 0; l < 3; l++){
             for (int j = 0; j < 3; ++j){
-              Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[l]*b[j] + Dvz*c[l]*c[j]);
+              Kv_temp[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[l]*b[j] + Dvz*c[l]*c[j]);
             }
           }
 
-	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
-	  //for (int m = 0; m <3; ++m){
+	float C_temp[3][3] = {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
+	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
-	      Ku[t[i][j]][t[i][j]] = Ku[t[i][j]][t[i][j]] + Ku[i][j];
-    	      Kv[t[i][j]][t[i][j]] = Kv[t[i][j]][t[i][j]] + Kv[i][j];
-    	      C[t[i][j]][t[i][j]] = C[t[i][j]][t[i][j]] + C[i][j];
+	      Ku[t[i][j]][t[i][j]] = Ku[t[i][j]][t[i][j]] + Ku_temp[m][j];
+    	      Kv[t[i][j]][t[i][j]] = Kv[t[i][j]][t[i][j]] + Kv_temp[m][j];
+    	      C[t[i][j]][t[i][j]] = C[t[i][j]][t[i][j]] + C_temp[m][j];
+
 	    }
-	  //}	  
+	  }	  
 	}
 
 	// Invullen l en r.	

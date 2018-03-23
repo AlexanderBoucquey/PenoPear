@@ -161,17 +161,17 @@ int main()
           float area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
           float K[3][3] = {};
 
-          //for (int i = 0; i < 3; i++){
+          for (int l = 0; l < 3; l++){
             for (int j = 0; j < 3; ++j){
-              Ku[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[i]*b[j] + Duz*c[i]*c[j]);
+              Ku[l][j] = (r[0] + r[1] + r[2])/(12*area)*(Dur*b[l]*b[j] + Duz*c[l]*c[j]);
             }
-          //}
+          }
 
-          //for (int i = 0; i < 3; i++){
+          for (int l = 0; l < 3; l++){
             for (int j = 0; j < 3; ++j){
-              Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[i]*b[j] + Dvz*c[i]*c[j]);
+              Kv[i][j] = (r[0] + r[1] + r[2])/(12*area)*(Dvr*b[l]*b[j] + Dvz*c[l]*c[j]);
             }
-          //}
+          }
 
 	float C[3][3]= {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	  //for (int m = 0; m <3; ++m){

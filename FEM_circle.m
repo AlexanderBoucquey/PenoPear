@@ -116,6 +116,6 @@ surf(xi,yi,zi);
 
 R = 0.025;
 r = linspace(0,0.025,200);
-Cu_analytic = (C_uamb.*R.^2.*hu.*sinh(r.*sqrt(V_mu./(Dur.*K_mu))))./(R.*hu.*r.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) - Dur.*r.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) + Dur.*R.*r.*cosh(R.*sqrt(V_mu./(Dur.*K_mu))).*sqrt(V_mu./(Dur.*K_mu)));
-
+Cu_analytic = (C_uamb.*R.^2.*hu.*sinh(r.*sqrt(V_mu./(Dur.*K_mu))))./(R.*hu.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) - Dur.*sinh(R.*sqrt(V_mu./(Dur.*K_mu))) + Dur.*R.*cosh(R.*sqrt(V_mu./(Dur.*K_mu))).*sqrt(V_mu./(Dur.*K_mu)))./r;
+figure
 plot(r,Cu_analytic);

@@ -7,9 +7,9 @@ Duz = 1.1E-9;
 Dvr = 2.32E-9;
 Dvz = 6.97E-9;
 R_g = 8.314;
-T = 272.15;
-nuu = 2/100;
-nuv =0.7/100;
+T = 293.15;
+nuu = 20.8/100;
+nuv =0/100;
 V_mu = 2.39E-4*exp(80200/R_g*(1/293.15-1/T));
 V_mfv = 1.61E-4*exp(56700/R_g*(1/293.15-1/T));
 K_mu = 0.4103;
@@ -25,7 +25,7 @@ C_uamb = p_atm*nuu/(R_g*T);
 C_vamb = p_atm*nuv/(R_g*T);
 
 % Mesh
-[p,t] = pear_mesh(0.0015);
+[p,t] = pear_mesh(0.0012);
 Ku = zeros(length(p),length(p));
 Kv = zeros(length(p),length(p));
 C = zeros(length(p),length(p));
@@ -34,7 +34,7 @@ dlmwrite('mesht.txt',t);
 
 % Randen
 %%
-rn = boundary(p,0.7);
+rn = boundary(p,0.75);
 rp = p(rn,:);
 %%
 

@@ -1,6 +1,6 @@
 function [Cu,Cv,N] = newton(C_u0,C_v0,F,J)
 % newton-raphson algorithm
-N =25; eps = 1.e-10; % define max. no. iterations and error
+N =1000; eps = 1.e-6; % define max. no. iterations and error
 
 u = size(C_u0,1);
 Cu = C_u0;

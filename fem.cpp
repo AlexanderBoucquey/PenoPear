@@ -181,7 +181,7 @@ int main()
             }
           }
 
-	precision C_temp[3][3] = {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
+	precision C_temp[3][3] = {{area/60.0*(6.0*r[0]+2.0*r[1]+2.0*r[2]), area/60.0*(2.0*r[0]+2.0*r[1]+r[2]), area/60.0*(2.0*r[0]+r[1]+2*r[2])},{area/60.0*(2.0*r[0]+2.0*r[1]+r[2]),area/60.0*(2.0*r[0]+6.0*r[1]+2.0*r[2]), area/60.0*(r[0]+2.0*r[1]+2.0*r[2])},{area/60.0*(2.0*r[0]+r[1]+2.0*r[2]), area/60.0*(r[0]+2.0*r[1]+2.0*r[2]), area/60.0*(2.0*r[0]+2.0*r[1]+6.0*r[2])}};
 	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
 	      Ku(t[i][m]-1,t[i][j]-1) = Ku(t[i][m]-1,t[i][j]-1) + Ku_temp(m,j);
@@ -241,8 +241,9 @@ int main()
 	v = cg.solve(b2);
 	std::cout << "#iterations:     " << cg.iterations() << std::endl;
 	std::cout << "estimated error: " << cg.error()      << std::endl;
-	cout<<v<<endl;
-	cout<<u<<endl;
+	//cout<<v<<endl;
+	//cout<<u<<endl;
+	
 //	SparseMatrix<float> A(lines_p,lines_p);
 //	u = Map<VectorXf>(R_q);//*
 //	u = hu*C_uamb*R_q;	
@@ -279,3 +280,72 @@ int numberOccurences(int arr[], int n, int x){
 	    res++;
 	return res;
 }
+
+void Ru_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudu){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);
+
+	Rudu.resize(lines_p,lines_p);*/
+	Rudu = (V_mu*K_mu/((1+v.array()*(1.0/K_mv))*(pow((K_mu+u.array()).array(),2)))).matrix().asDiagonal();
+
+}
+
+void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);
+
+	Rudu.resize(lines_p,lines_p);*/
+	Rudv = ((-V_mu*u.array())/((K_mv*pow(1+v.array()*(1.0/K_mv),2))*((K_mu+u.array()).array()))).matrix().asDiagonal();
+
+}
+
+
+//r_q*Rudu + ni vergeten dit + te doen want lukte voor een of andere reden ni in functie
+void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double r_q, double V_fv, double K_mfu,double V_mu, double K_mu,double K_mv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);*/
+
+	/*Rudu.resize(lines_p,lines_p);
+	Rudv.resize(lines_p,lines_p);*/
+	Rudv = ((-V_fv)/(K_mfu*(pow(1+u.array()*(1.0/K_mfu),2)))).matrix().asDiagonal();
+
+}
+
+
+void Rv_dv( double r_q,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdv){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);
+
+	Rudu.resize(lines_p,lines_p);
+	Rudv.resize(lines_p,lines_p);*/
+	Rvdv = r_q*Rudv;
+
+}
+
+void R_u(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);
+
+	Rudu.resize(lines_p,lines_p);*/
+	Ru = ((V_mu*u.array())/((K_mu+u.array())*(1+v.array()*(1.0/K_mv)))).matrix();
+
+}
+
+void R_v(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u, double r_q, double V_fv, double K_mfu,  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rv){
+	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
+	/*u.resize(lines_p,lines_p);
+	v.resize(lines_p,lines_p);
+
+	Rudu.resize(lines_p,lines_p);*/
+	Rv = r_q*Ru + (V_fv/(1+u.array()*(1.0/K_mfu))).matrix();
+
+}
+ 
+//auto mat = vec.asDiagonal();
+//result = m.cwiseProduct(n);
+

@@ -164,9 +164,9 @@ int main()
 	    z[j]= p[t[i][j]-1][1];
 	  }
 
-          precision a[3] = {r[2]*z[1]-r[1]*z[2], r[0]*z[2]-r[2]*z[0], r[1]*z[0]-r[0]*z[1]}; 
-       	  precision b[3] = {z[2]-z[1],z[0]-z[2],z[1]-z[0]};
-          precision c[3] = {r[1]-r[2],r[2]-r[0],r[0]-r[1]};
+          precision a[3] = {r[1]*z[2]-r[2]*z[1], r[2]*z[0]-r[0]*z[2], r[0]*z[1]-r[1]*z[0]}; 
+       	  precision b[3] = {z[1]-z[2],z[2]-z[0],z[0]-z[1]};
+          precision c[3] = {r[2]-r[1],r[0]-r[2],r[1]-r[0]};
           precision area = r[1]*z[2]+r[0]*z[1] + r[2]*z[0] - r[1]*z[0] - r[0]*z[2] - r[2]*z[1]; 
 
           for (int l = 0; l < 3; l++){
@@ -184,9 +184,9 @@ int main()
 	precision C_temp[3][3] = {{area/60*6*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+r[3], area/60*2*r[1]+r[2]+2*r[3]},{area/60*2*r[1]+2*r[2]+r[3],area/60* 2*r[1]+6*r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3]},{area/60*2*r[1]+r[2]+2*r[3], area/60*r[1]+2*r[2]+2*r[3], area/60*2*r[1]+2*r[2]+6*r[3]}};
 	  for (int m = 0; m <3; ++m){
 	    for (int j = 0; j <3; ++j){
-	      Ku(t[i][j]-1,t[i][j]-1) = Ku(t[i][j]-1,t[i][j]-1) + Ku_temp(m,j);
-    	      Kv(t[i][j]-1,t[i][j]-1) = Kv(t[i][j]-1,t[i][j]-1) + Kv_temp(m,j);
-    	      C(t[i][j]-1,t[i][j]-1) = C(t[i][j]-1,t[i][j]-1) + C_temp[m][j];
+	      Ku(t[i][m]-1,t[i][j]-1) = Ku(t[i][m]-1,t[i][j]-1) + Ku_temp(m,j);
+    	      Kv(t[i][m]-1,t[i][j]-1) = Kv(t[i][m]-1,t[i][j]-1) + Kv_temp(m,j);
+    	      C(t[i][m]-1,t[i][j]-1) = C(t[i][m]-1,t[i][j]-1) + C_temp[m][j];
 
 	    }
 	  }
@@ -241,7 +241,8 @@ int main()
 	v = cg.solve(b2);
 	std::cout << "#iterations:     " << cg.iterations() << std::endl;
 	std::cout << "estimated error: " << cg.error()      << std::endl;
-	//cout<<x<<endl;
+	cout<<v<<endl;
+	cout<<u<<endl;
 //	SparseMatrix<float> A(lines_p,lines_p);
 //	u = Map<VectorXf>(R_q);//*
 //	u = hu*C_uamb*R_q;	

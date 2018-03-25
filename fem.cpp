@@ -11,6 +11,12 @@ using namespace Eigen; // Eigen library
 
 int mostFrequentElement(int arr[], int x);
 int numberOccurences(int arr[], int n, int x);
+void R_u(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru);
+void R_v(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u, double r_q, double V_fv, double K_mfu,  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rv);
+void Ru_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudu);
+void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv);
+void Rv_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double r_q, double V_fv, double K_mfu,double V_mu, double K_mu,double K_mv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdu);
+void Rv_dv( double r_q,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdv);
 
 int main()
 {	// VARIABELEN
@@ -141,7 +147,7 @@ int main()
 	// Initialiseren
 	precision r[3] = {};
 	precision z[3] = {};
-	Eigen::Matrix<precision, Eigen::Dynamic, Eigen::Dynamic> Ku, Kv, C,K_h, Ku_temp, Kv_temp, l, r2, R_q,u,A1,A2,b1,b2,v;
+	Eigen::Matrix<precision, Eigen::Dynamic, Eigen::Dynamic> Ku, Kv, C,K_h, Ku_temp, Kv_temp, l, r2, R_q,u,A1,A2,b1,b2,v,C_u,C_v,Ru,Rv,Rudu,Rudv,Rvdu,Rvdv,x,J,F,delta;
 	Ku.resize(lines_p,lines_p);
 	Kv.resize(lines_p,lines_p);
 	C.resize(lines_p,lines_p);
@@ -157,6 +163,20 @@ int main()
 	v.resize(lines_p,1);
 	A2.resize(lines_p,lines_p);
 	b2.resize(lines_p,1);
+	C_u.resize(lines_p,1);
+	C_v.resize(lines_p,1);
+	Ru.resize(lines_p,1);
+	Rv.resize(lines_p,1);
+	Rudu.resize(lines_p,lines_p);
+	Rudv.resize(lines_p,lines_p);
+	Rvdu.resize(lines_p,lines_p);
+	Rvdv.resize(lines_p,lines_p);
+	J.resize(2*lines_p,2*lines_p);
+	F.resize(2*lines_p,1);
+	x.resize(2*lines_p,1);
+	delta.resize(2*lines_p,1);		
+
+
 	// Invullen Ku, Kv en C.
 	for (int i = 0; i< lines_t; i++){
 	  for (int j = 0; j <3; ++j){
@@ -250,6 +270,73 @@ int main()
 
 	// NIET LINEAIRE OPLOSSING
 	// TODO: Juiste functies ingeven en Newton implementeren.
+	C_u = u;
+	C_v = v;
+	int it = 0;
+	double eps = 1.0;
+	while ((eps > 1e-10) && (it < 50)){
+		if (it == 49){
+			cout<<"no convergence"<<endl;
+		}
+		it += 1;
+
+		R_u(C_u,C_v,V_mu,K_mu,K_mv,Ru);
+		R_v(C_u,r_q,V_mfv,K_mfu,Ru,Rv);
+		Ru_du(C_u,C_v, V_mu,K_mu,K_mv,Rudu);
+		Ru_dv(C_u,C_v, V_mu,K_mu,K_mv,Rudv);
+		Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv,Rvdu);
+		Rvdu = r_q*Rudu + Rudu;
+		Rv_dv(r_q,Rvdu,Rvdv);
+		
+		J.block(0,0,lines_p,lines_p) = Ku+C*Rudu+hu*K_h;
+//cout<<"test"<<endl;
+		J.block(0,lines_p,lines_p,lines_p)= C*Rudv;
+		J.block(lines_p,0,lines_p,lines_p)= -C*Rvdu;
+		J.block(lines_p,lines_p,lines_p,lines_p)= Kv-C*Rvdv+hv*K_h;
+		
+		
+		F.block(0,0,lines_p,1) = Ku*C_u + C*Ru + hu*(K_h*C_u-R_q*C_uamb);
+		F.block(lines_p,0,lines_p,1) = Kv*C_v - C*Rv + hv*(K_h*C_v - R_q*C_vamb);
+
+		
+		cg.compute(-J);
+		delta = cg.solve(F);
+		std::cout << "#iterations:     " << cg.iterations() << std::endl;
+		std::cout << "estimated error: " << cg.error()      << std::endl;
+		x = x+delta;
+		C_u = x.block(0,0,lines_p,1);
+		C_v = x.block(lines_p,0,lines_p,1);
+		eps = delta.norm();
+
+	}
+//cout<<C_u<<endl;
+	/*
+	F = @(C_u,C_v) [Ku*C_u+C*R_u(C_u,C_v,V_mu,K_mu,K_mv)+hu.*(K_h*C_u-R_q.*C_uamb);...
+    Kv*C_v-C*R_v(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv)+hv.*(K_h*C_v-R_q.*C_vamb)];
+J = @(C_u,C_v) [[Ku+C*Ru_du(C_u,C_v, V_mu,K_mu,K_mv)+hu.*K_h ...
+    C*Ru_dv(C_u,C_v, V_mu,K_mu,K_mv)];...
+    [-C*Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv) ...
+    Kv-C*Rv_dv(C_u,C_v,r_q,V_mu,K_mu,K_mv)+hv.*K_h]];
+	
+	while (N>0)
+	 N = N - 1;
+	 disp(res)
+	 disp(N)
+	 xn = x - J(Cu,Cv)\(F(Cu,Cv));
+	 res = norm(x-xn);
+	if res < eps
+	 disp('converged');
+	 Cu = xn(1:u);
+	 Cv = xn(u+1:end);
+	 return;
+	end 
+	 x = xn;
+	 Cu = x(1:u);
+	 Cv = x(u+1:end);
+	end
+	error('No convergence');
+	end
+	% end function */
 
 	// PLOT OPLOSSINGEN
 	// TODO: De oplossingen plotten. 
@@ -303,14 +390,14 @@ void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix
 
 
 //r_q*Rudu + ni vergeten dit + te doen want lukte voor een of andere reden ni in functie
-void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double r_q, double V_fv, double K_mfu,double V_mu, double K_mu,double K_mv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv){
+void Rv_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double r_q, double V_fv, double K_mfu,double V_mu, double K_mu,double K_mv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdu){
 	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
 	/*u.resize(lines_p,lines_p);
 	v.resize(lines_p,lines_p);*/
 
 	/*Rudu.resize(lines_p,lines_p);
 	Rudv.resize(lines_p,lines_p);*/
-	Rudv = ((-V_fv)/(K_mfu*(pow(1+u.array()*(1.0/K_mfu),2)))).matrix().asDiagonal();
+	Rvdu = ((-V_fv)/(K_mfu*(pow(1+u.array()*(1.0/K_mfu),2)))).matrix().asDiagonal();
 
 }
 

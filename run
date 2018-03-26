@@ -1,3 +1,4 @@
+matlab -r addpath('distmesh')
 matlab -nodisplay -r "Input(0.0015);exit"
 ./fem
-matlab -r "Output();"
+matlab -nodisplay -r "Output();"

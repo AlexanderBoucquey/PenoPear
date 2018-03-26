@@ -27,6 +27,7 @@ int main()
 	int numt{0};
 	string line,temp;
 	ifstream fp,ft, frn, frp;
+    ofstream fcu0("Cu_0.txt"), fcv0("Cv_0.txt"), fcu("Cu.txt"), fcv("Cv.txt");
 	precision Kh, Rq;	
 
 	// TEST CONSTANTEN
@@ -261,6 +262,16 @@ int main()
 	v = cg.solve(b2);
 	std::cout << "#iterations:     " << cg.iterations() << std::endl;
 	std::cout << "estimated error: " << cg.error()      << std::endl;
+	
+ 	// Print oplossing in .txt
+	
+	if (fcu0.is_open())
+	  fcu0 << u << '\n';	
+     	fcu0.close();
+   	
+	if (fcv0.is_open())
+	  fcv0 << v << '\n';
+	fcv0.close(); 
 	//cout<<v<<endl;
 	//cout<<u<<endl;
 	
@@ -309,6 +320,14 @@ int main()
 		eps = delta.norm();
 
 	}
+
+	if (fcu.is_open())
+	  fcu << C_u << '\n';
+	fcu.close(); 
+
+	if (fcv.is_open())
+	  fcv << C_v << '\n';
+	fcv.close(); 
 //cout<<C_u<<endl;
 	/*
 	F = @(C_u,C_v) [Ku*C_u+C*R_u(C_u,C_v,V_mu,K_mu,K_mv)+hu.*(K_h*C_u-R_q.*C_uamb);...

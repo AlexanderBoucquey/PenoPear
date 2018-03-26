@@ -27,6 +27,7 @@ int main()
 	int numt{0};
 	string line,temp;
 	ifstream fp,ft, frn, frp;
+    ofstream fcu0;
 	precision Kh, Rq;	
 
 	// TEST CONSTANTEN
@@ -263,11 +264,11 @@ int main()
 	std::cout << "estimated error: " << cg.error()      << std::endl;
 	
  	// Print oplossing in .txt
-	std::ofstream file("test.txt");
-	if (file.is_open())
-	{
-	  file << u << '\n';
-	}
+    fcu0.open();
+	fcu0("Cu_0.txt");
+	fcu0 << u << '\n';	
+    fcu0.close();
+    
 	//cout<<v<<endl;
 	//cout<<u<<endl;
 	

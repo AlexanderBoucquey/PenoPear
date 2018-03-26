@@ -5,18 +5,20 @@
 #include <fstream>	// Open file
 #include <Eigen/Dense>  // Eigen Library
 #include <Eigen/IterativeLinearSolvers> // Conjugate gradient
+#include <unsupported/Eigen/GMRES.h>
 
 using namespace std;
 using namespace Eigen; // Eigen library
 
 int mostFrequentElement(int arr[], int x);
 int numberOccurences(int arr[], int n, int x);
+/*
 void R_u(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru);
 void R_v(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u, double r_q, double V_fv, double K_mfu,  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Ru, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rv);
 void Ru_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudu);
 void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv);
 void Rv_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double r_q, double V_fv, double K_mfu,double V_mu, double K_mu,double K_mv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdu);
-void Rv_dv( double r_q,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdv);
+void Rv_dv( double r_q,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rvdv);*/
 
 int main()
 {	// VARIABELEN
@@ -285,20 +287,27 @@ int main()
 	C_v = v;
 	int it = 0;
 	double eps = 1.0;
-	while ((eps > 1e-10) && (it < 50)){
+	while ((eps > 1e-3) && (it < 50)){
 		if (it == 49){
 			cout<<"no convergence"<<endl;
 		}
 		it += 1;
-
-		R_u(C_u,C_v,V_mu,K_mu,K_mv,Ru);
+		Ru = ((V_mu*u.array())/((K_mu+u.array())*(1+v.array()*(1.0/K_mv)))).matrix();
+		Rv = r_q*Ru + (V_mfv/(1+u.array()*(1.0/K_mfu))).matrix();
+		Rudu = (V_mu*K_mu/((1+v.array()*(1.0/K_mv))*(pow((K_mu+u.array()).array(),2)))).matrix().asDiagonal();
+		Rudv = ((-V_mu*u.array())/((K_mv*pow(1+v.array()*(1.0/K_mv),2))*((K_mu+u.array()).array()))).matrix().asDiagonal();
+		Rvdu = ((-V_mfv)/(K_mfu*(pow(1+u.array()*(1.0/K_mfu),2)))).matrix().asDiagonal();
+		Rvdu = r_q*Rudu + Rvdu;
+		Rvdv = r_q*Rudv;
+		/*R_u(C_u,C_v,V_mu,K_mu,K_mv,Ru);
 		R_v(C_u,r_q,V_mfv,K_mfu,Ru,Rv);
 		Ru_du(C_u,C_v, V_mu,K_mu,K_mv,Rudu);
 		Ru_dv(C_u,C_v, V_mu,K_mu,K_mv,Rudv);
 		Rv_du(C_u,C_v,r_q,V_mfv,K_mfu,V_mu,K_mu,K_mv,Rvdu);
 		Rvdu = r_q*Rudu + Rudu;
-		Rv_dv(r_q,Rvdu,Rvdv);
-		
+		Rv_dv(r_q,Rvdu,Rvdv);*/
+
+		//cout<<V_mu<<K_mu<<K_mv<<endl;
 		J.block(0,0,lines_p,lines_p) = Ku+C*Rudu+hu*K_h;
 //cout<<"test"<<endl;
 		J.block(0,lines_p,lines_p,lines_p)= C*Rudv;
@@ -308,16 +317,32 @@ int main()
 		
 		F.block(0,0,lines_p,1) = Ku*C_u + C*Ru + hu*(K_h*C_u-R_q*C_uamb);
 		F.block(lines_p,0,lines_p,1) = Kv*C_v - C*Rv + hv*(K_h*C_v - R_q*C_vamb);
-
+			//	cout<<J.block(0,0,10,10)<<endl;
+		/*cg.compute(J);
+		delta = cg.solve(F);*/
+		/*
+		GMRES<Matrix<precision, Eigen::Dynamic, Eigen::Dynamic> > solver(-J);
+		delta= solver.solve(F);
+		std::cout << "#iterations:     " << solver.iterations() << std::endl;
+		std::cout << "estimated error: " << solver.error()      << std::endl;
+		*/
+		// bicgstab werkt maar trage convergentie
+		  BiCGSTAB<Matrix<precision, Eigen::Dynamic, Eigen::Dynamic>> solver;
+		  solver.compute(-J);
+		  delta = solver.solve(F);
+		  std::cout << "#iterations:     " << solver.iterations() << std::endl;
+		  std::cout << "estimated error: " << solver.error()      << std::endl;
 		
-		cg.compute(-J);
-		delta = cg.solve(F);
-		std::cout << "#iterations:     " << cg.iterations() << std::endl;
-		std::cout << "estimated error: " << cg.error()      << std::endl;
+		// zou moeten werken maar convergeert niet
+		//delta = (-J).llt().solve(F);
+		//delta = -delta;
+		//std::cout << "#iterations:     " << cg.iterations() << std::endl;
+		//std::cout << "estimated error: " << cg.error()      << std::endl;
 		x = x+delta;
 		C_u = x.block(0,0,lines_p,1);
 		C_v = x.block(lines_p,0,lines_p,1);
-		eps = delta.norm();
+		eps = delta.norm()/x.norm();
+		cout<<"relatieve fout: "<<eps<<" iteratie: "<<it<<endl;
 
 	}
 
@@ -386,23 +411,23 @@ int numberOccurences(int arr[], int n, int x){
 	    res++;
 	return res;
 }
-
+/*
 void Ru_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudu){
 	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
-	/*u.resize(lines_p,lines_p);
+	u.resize(lines_p,lines_p);
 	v.resize(lines_p,lines_p);
 
-	Rudu.resize(lines_p,lines_p);*/
+	Rudu.resize(lines_p,lines_p);
 	Rudu = (V_mu*K_mu/((1+v.array()*(1.0/K_mv))*(pow((K_mu+u.array()).array(),2)))).matrix().asDiagonal();
 
 }
 
 void Ru_dv(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> v, double V_mu, double K_mu,double K_mv,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rudv){
 	//Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vec
-	/*u.resize(lines_p,lines_p);
+	u.resize(lines_p,lines_p);
 	v.resize(lines_p,lines_p);
 
-	Rudu.resize(lines_p,lines_p);*/
+	Rudu.resize(lines_p,lines_p);
 	Rudv = ((-V_mu*u.array())/((K_mv*pow(1+v.array()*(1.0/K_mv),2))*((K_mu+u.array()).array()))).matrix().asDiagonal();
 
 }
@@ -415,7 +440,7 @@ void Rv_du(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix
 	v.resize(lines_p,lines_p);*/
 
 	/*Rudu.resize(lines_p,lines_p);
-	Rudv.resize(lines_p,lines_p);*/
+	Rudv.resize(lines_p,lines_p);
 	Rvdu = ((-V_fv)/(K_mfu*(pow(1+u.array()*(1.0/K_mfu),2)))).matrix().asDiagonal();
 
 }
@@ -427,7 +452,7 @@ void Rv_dv( double r_q,Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Rud
 	v.resize(lines_p,lines_p);
 
 	Rudu.resize(lines_p,lines_p);
-	Rudv.resize(lines_p,lines_p);*/
+	Rudv.resize(lines_p,lines_p);
 	Rvdv = r_q*Rudv;
 
 }
@@ -437,7 +462,7 @@ void R_u(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u,Eigen::Matrix<d
 	/*u.resize(lines_p,lines_p);
 	v.resize(lines_p,lines_p);
 
-	Rudu.resize(lines_p,lines_p);*/
+	Rudu.resize(lines_p,lines_p);
 	Ru = ((V_mu*u.array())/((K_mu+u.array())*(1+v.array()*(1.0/K_mv)))).matrix();
 
 }
@@ -447,11 +472,11 @@ void R_v(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> u, double r_q, do
 	/*u.resize(lines_p,lines_p);
 	v.resize(lines_p,lines_p);
 
-	Rudu.resize(lines_p,lines_p);*/
+	Rudu.resize(lines_p,lines_p);
 	Rv = r_q*Ru + (V_fv/(1+u.array()*(1.0/K_mfu))).matrix();
 
 }
- 
+ */
 //auto mat = vec.asDiagonal();
 //result = m.cwiseProduct(n);
 

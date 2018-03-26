@@ -261,6 +261,13 @@ int main()
 	v = cg.solve(b2);
 	std::cout << "#iterations:     " << cg.iterations() << std::endl;
 	std::cout << "estimated error: " << cg.error()      << std::endl;
+	
+ 	// Print oplossing in .txt
+	std::ofstream file("test.txt");
+	if (file.is_open())
+	{
+	  file << u << '\n';
+	}
 	//cout<<v<<endl;
 	//cout<<u<<endl;
 	

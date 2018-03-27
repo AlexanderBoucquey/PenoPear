@@ -33,9 +33,9 @@ int main()
 	precision Kh, Rq;	
 
 	// TEST CONSTANTEN
-	precision T = 272.15;
-	precision nuu = 0.02;
-	precision nuv = 0.007;
+	precision T = 293.15;
+	precision nuu = 0.208;
+	precision nuv = 0.000;
 
 	// CONSTANTEN
 	precision Dur = 2.8e-10;
@@ -286,7 +286,7 @@ int main()
 	C_u = u;
 	C_v = v;
 	int it = 0;
-	double eps = 1.0;
+	double eps = 1.0, abs = 1.0;
 	while ((eps > 1e-3) && (it < 50)){
 		if (it == 49){
 			cout<<"no convergence"<<endl;
@@ -342,8 +342,9 @@ int main()
 		C_u = x.block(0,0,lines_p,1);
 		C_v = x.block(lines_p,0,lines_p,1);
 		eps = delta.norm()/x.norm();
+		abs = delta.norm();
 		cout<<"relatieve fout: "<<eps<<" iteratie: "<<it<<endl;
-
+		cout<<"absolute fout: "<<abs<<endl;
 	}
 
 	if (fcu.is_open())

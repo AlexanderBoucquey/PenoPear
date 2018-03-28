@@ -103,7 +103,29 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{Resultaten: Shelf life en Orchard}
+\frametitle{Analytische oplossing O2}
+$r^2*C_u'' +2*r*C_u' - B^2*r^2*C_u = 0$ \\ $ \Leftrightarrow C_u(r) = C_1*\frac{exp(-B*r)}{r}+C_2*\frac{exp(B*r)}{B*r}$. Die voldoen aan randvoorwaarden: $C_u'(0) = 0$ en $ C_u'(R) = \frac{h_u}{Dur}*(C_u-C_{uamb})$.\\
+Dit geeft de oplossing:\\
+$ C_u(r)= \frac{R^2*h_u*C_{uamb}*sinh(B*r)}{r*(Dur*cosh(B*R)*B*R-Dur*sinh(B*R)+R*h_u*sinh(B*R))}$
+\end{frame}
+
+\begin{frame}
+\frametitle{Vergelijk analytische en numerieke oplossing voor cirkel}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Precooling_sphere_O2_analytical.png}
+\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Precooling.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Precooling_sphere_O2_analytical_finemesh.png}
+\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Precooling voor een fijner mesh.}
+\end{figure}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -115,21 +137,23 @@
 \caption{Vergelijk analytische en numerieke oplossing van O2 voor de Optimal CA.}
 \end{figure}
 \end{column}
-	
+
+
 \begin{column}{0.48\textwidth}
 \begin{figure}
-\includegraphics[width = 1\textwidth]{Precooling_sphere_O2_analytical.png}
-\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Precooling.}
+\includegraphics[width = 1\textwidth]{Optimal_CA_sphere_O2_analytical_finemesh.png}
+\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Optimal CA voor een fijner mesh.}
 \end{figure}
 \end{column}
 \end{columns}
 \end{frame}
 
+
+
 \begin{frame}
 \frametitle{Verloren tijd, onverwachte resultaten en mogelijke verbeteringen}
 \begin{itemize}
 \item Lang gedacht dat de niet lineaire oplossing in matlab fout was. (Terwijl correct)
-\item Een fijner mesh geeft niet persé betere convergentie (wat we wel dachten), dit kan gezien worden bij de analytische en numerieke oplossing.
 \item Mogelijke verbeteringen
 \begin{itemize}
 \item Gebruik maken van het sparse zijn

@@ -249,7 +249,6 @@ int main()
 
 	
 	// LINEAIRE OPLOSSING
-	// TODO: lineaire oplossing berekenen.
 //
 	A1 = Ku + (V_mu/K_mu)*C + hu*K_h;
 	b1 = hu*C_uamb*R_q;
@@ -282,7 +281,6 @@ int main()
 //	u = hu*C_uamb*R_q;	
 
 	// NIET LINEAIRE OPLOSSING
-	// TODO: Juiste functies ingeven en Newton implementeren.
 	C_u = u;
 	C_v = v;
 	int it = 0;
@@ -383,8 +381,6 @@ J = @(C_u,C_v) [[Ku+C*Ru_du(C_u,C_v, V_mu,K_mu,K_mv)+hu.*K_h ...
 	end
 	% end function */
 
-	// PLOT OPLOSSINGEN
-	// TODO: De oplossingen plotten. 
 	return 0;
 }
 

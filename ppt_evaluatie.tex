@@ -1,0 +1,145 @@
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\title{Project WIT: Pear}
+\author{Mattias Billast, Alexander Boucquey}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\frametitle{Overzicht project}
+\tableofcontents
+\end{frame}
+
+\begin{frame}
+\frametitle{Werkwijze}
+\begin{enumerate}
+\item Handgeschreven oplossing;
+\item Uitwerken in matlab en verbeteren indien niet realistisch of correct (vergelijken met analytische oplossing);
+\item Uitschrijven in c++;
+\item Optimaliseren in c++.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultaten: Optimal CA}
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Optimal_CA_pear_CO2_boven.png}
+\caption{CO2 voor Optimal CA.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Optimal_CA_pear_O2_boven.png}
+\caption{O2 voor Optimal CA.}
+\end{figure}
+\end{column}
+\end{columns}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultaten: Disorder inducing}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Disorder_inducing_pear_CO2_boven.png}
+\caption{CO2 voor Disorder inducing.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Disorder_inducing_pear_O2_boven.png}
+\caption{O2 voor Disorder inducing.}
+\end{figure}
+\end{column}
+\end{columns}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultaten: Precooling}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Precooling_pear_CO2_boven.png}
+\caption{CO2 voor Precooling.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Precooling_pear_O2_boven.png}
+\caption{O2 voor Precooling.}
+\end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultaten: Refrigerator}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Refrigerator_pear_CO2_boven.png}
+\caption{CO2 voor Refrigerator.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Refrigerator_pear_O2_boven.png}
+\caption{O2 voor Refrigerator.}
+\end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resultaten: Shelf life en Orchard}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vergelijk analytische en numerieke oplossing voor cirkel}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Optimal_CA_sphere_O2_analytical.png}
+\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Optimal CA.}
+\end{figure}
+\end{column}
+	
+\begin{column}{0.48\textwidth}
+\begin{figure}
+\includegraphics[width = 1\textwidth]{Precooling_sphere_O2_analytical.png}
+\caption{Vergelijk analytische en numerieke oplossing van O2 voor de Precooling.}
+\end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Verloren tijd, onverwachte resultaten en mogelijke verbeteringen}
+\begin{itemize}
+\item Lang gedacht dat de niet lineaire oplossing in matlab fout was. (Terwijl correct)
+\item Een fijner mesh geeft niet persé betere convergentie (wat we wel dachten), dit kan gezien worden bij de analytische en numerieke oplossing.
+\item Mogelijke verbeteringen
+\begin{itemize}
+\item Gebruik maken van het sparse zijn
+\item Multigrid methode proberen
+\item Zoeken naar een betere preconditioner
+\item Opkuisen van cpp file
+\item mesh in cpp zelf laten maken (en matlab volledig uitschakelen)
+\item ...
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\end{document}
